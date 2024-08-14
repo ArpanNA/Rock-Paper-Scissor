@@ -1,166 +1,213 @@
-// const playerText = document.querySelector("#playerText");
-// const computerText = document.querySelector("#computerText");
-// const resultText = document.querySelector("#resultText");
-// const choiceBtn = document.querySelectorAll(".choiceBtn");
-// let player;
-// let computer;
-// let result;
+///MY CONSOLE LOGIC ///
 
-// choiceBtn.forEach(button => button.addEventListener("click", () => {
-//     player = button.textContent;
-//     computerTurn();
-//     playerText.textContent = `player : ${player}`;
-//     computerText.textContent = `computer : ${computer}`;
-//     resultText. textContent = checkWinner();
+// const getComputerChoice = function () {
+//   const choices = ["Rock", "Paper", "Scissors"];
+//   const randomIndex = Math.floor(Math.random() * choices.length);
+//   return choices[randomIndex];
+// };
+// console.log(getComputerChoice());
+// const getPlayerChoice = function () {
+//   const userInput = prompt("Rock, Paper, or Scissors?");
+//   if (userInput) {
+//     let formattedInput = userInput.trim().toLowerCase();
+//     formattedInput =
+//       formattedInput.charAt(0).toUpperCase() + userInput.slice(1);
 
-// }));
-
-// function computerTurn() {
-//     const random = Math.floor(Math.random() * 3) +1;
-
-//     switch (random){
-//         case 1:
-//             computer = "ROCK";
-//             break;
-//         case 2:
-//             computer = "PAPER";
-//             break;  
-//         case 3:
-//             computer = "SCISSORS";
-//             break; 
-
+//     if (["Rock", "Paper", "Scissors"].includes(formattedInput)) {
+//       return formattedInput;
 //     }
-// }
-// function checkWinner() {
-//     if (computer == player){
-//         return "Draw!";
-//     }
-//     else if (computer == "ROCK") {
-//        return (player == "PAPER") ? "You win!" : "You lose!";
-//     }
-//     else if (computer == "PAPER") {
-//         return (player == "SCISSORS") ? "You win!" : "You lose!";
-//      }
-//      else if (computer == "SCISSORS") {
-//         return (player == "ROCK") ? "You win!" : "You lose!";
-//      }
-// }
+//   }
+//   alert("Please enter Rock, Paper, or Scissors");
+//   return getPlayerChoice();
+// };
 
-// Get all necessary DOM nodes
-const images = Array.from(document.querySelectorAll('.card-image'));
-const message = document.querySelector('.message');
-const scorePlayer = document.querySelector('.player-score');
-const scoreComputer = document.querySelector('.computer-score');
-const selectionPlayer = document.querySelector('.player');
-const selectionComputer = document.querySelector('.computer');
+// let winningScore = parseInt(prompt("Enter winning score:"));
+// let humanScore = 0;
+// let computerScore = 0;
+
+// const playLogic = () => {
+//   while (computerScore !== winningScore && humanScore !== winningScore) {
+//     const computerChoice = getComputerChoice();
+//     const playerChoice = getPlayerChoice();
+
+//     if (computerChoice == playerChoice) {
+//       alert("It's a tie!");
+//     } else if (
+//       (computerChoice == "Rock" && playerChoice == "Paper") ||
+//       (computerChoice == "Paper" && playerChoice == "Scissors") ||
+//       (computerChoice == "Scissors" && playerChoice == "Rock")
+//     ) {
+//       humanScore++;
+//       alert("You win this round!");
+//     } else {
+//       computerScore++;
+//       alert("Computer wins this round!");
+//     }
+//     console.log(`playerScore: ${humanScore} BotScore: ${computerScore}`);
+//   }
+//   if (humanScore === winningScore) {
+//     alert("Hooray!!! You win the game!");
+//   } else {
+//     alert("Sorry, you lose the game! COmputer wins!");
+//   }
+// };
+// playLogic();
+/**********************************************************************/
+/*MAIN GAME*/
+function getComputerSelection() {
+  let choices = ["rock", "paper", "scissors"];
+  let computerChoice = Math.floor(Math.random() * 3);
+  return choices[computerChoice];
+}
+
+function playRound(playerChoice, computerChoice) {
+  let roundWinner;
+  if (playerChoice === computerChoice) {
+    roundWinner = "none";
+  } else if (playerChoice === "paper" && computerChoice === "rock") {
+    roundWinner = "player";
+  } else if (playerChoice === "rock" && computerChoice === "paper") {
+    roundWinner = "computer";
+  } else if (playerChoice === "rock" && computerChoice === "scissors") {
+    roundWinner = "player";
+  } else if (playerChoice === "scissors" && computerChoice === "rock") {
+    roundWinner = "computer";
+  } else if (playerChoice === "scissors" && computerChoice === "paper") {
+    roundWinner = "player";
+  } else if (playerChoice === "paper" && computerChoice === "scissors") {
+    roundWinner = "computer";
+  }
+  return roundWinner;
+}
+
+function updateInfo() {
+  roundN.innerText = `Round ${roundNum}`;
+  pScore.innerText = playerScore;
+  cScore.innerText = computerScore;
+}
+
+function game(playerChoice) {
+  let computerChoice = getComputerSelection();
+  cSelectionImg.src = `images/${computerChoice}.png`;
+  pSelectionDiv.appendChild(pSelectionImg);
+  cSelectionDiv.appendChild(cSelectionImg);
+
+  let roundWinner = playRound(playerChoice, computerChoice);
+  switch (roundWinner) {
+    case "player":
+      console.log("You Win! " + playerChoice + " Beats " + computerChoice);
+      playerScore++;
+      cSelectionDiv.classList.add("lose");
+      break;
+    case "computer":
+      console.log("You Lose! " + computerChoice + " Beats " + playerChoice);
+      computerScore++;
+      pSelectionDiv.classList.add("lose");
+      break;
+    case "none":
+      console.log("It's a Tie!");
+      pSelectionDiv.classList.add("lose");
+      cSelectionDiv.classList.add("lose");
+      break;
+  }
+  roundNum++;
+  updateInfo();
+  roundSect.addEventListener("transitionend", removeTransitionClass);
+  if (playerScore === 5 || computerScore === 5) {
+    gameEnd();
+  }
+}
+
+function removeTransitionClass(e) {
+  if (e.propertyName !== "transform") return;
+  roundSect.classList.remove("transition");
+  selectionSect.classList.remove("transition");
+  pSelectionDiv.classList.remove("lose");
+  cSelectionDiv.classList.remove("lose");
+}
+
+function gameEnd() {
+  let messages = [
+    "You Won, congratulations!",
+    "You lost, better luck next time!",
+  ];
+  selectionSect.classList.add("fadeOut");
+  if (playerScore > computerScore) {
+    endMsg.innerText = messages[0];
+  } else {
+    endMsg.innerText = messages[1];
+  }
+  gameEndSect.classList.add("transition");
+}
 
 let playerScore = 0;
 let computerScore = 0;
+let roundNum = 1;
+//intro
+const textDiv = document.querySelector("#game-intro .text");
+const circles = document.querySelector("#game-intro .circles");
+const wave = document.querySelector("#game-intro .wave");
+//game info
+const pScore = document.querySelector("#game-info #p-points");
+const cScore = document.querySelector("#game-info #c-points");
+const playButton = document.querySelector("#game-intro .play.btn");
+const roundN = document.querySelector("#game-info .round");
+//selection
+const rockDiv = document.querySelector("#selection #rock");
+const paperDiv = document.querySelector("#selection #paper");
+const scissorsDiv = document.querySelector("#selection #scissors");
+const gameSect = document.querySelector("#game");
+const selectionSect = document.querySelector("#game #selection");
+//round
+const roundSect = document.querySelector("#game #round");
+const pSelectionImg = document.createElement("img");
+const cSelectionImg = document.createElement("img");
+const pSelectionDiv = document.querySelector("#game #round .player-selection");
+const cSelectionDiv = document.querySelector("#game #round .cpu-selection");
+//game end
+const endMsg = document.querySelector("#game #game-end .end-msg");
+const gameEndSect = document.querySelector("#game #game-end");
+const replayButton = document.querySelector("#game #game-end .replay.btn");
 
-// Start Game when user clicks on an image
-images.forEach((image) =>
-  image.addEventListener('click', () => {
-    if (playerScore >= 5 || computerScore >= 5) {
-      return;
-    }
-    game(image.dataset.image);
-  })
-);
+function main() {
+  playButton.addEventListener("click", () => {
+    textDiv.classList.add("transition");
+    gameSect.classList.add("transition");
+    circles.classList.add("transition");
+    wave.classList.add("transition");
+  });
 
-/* Game Logic */
+  replayButton.addEventListener("click", () => {
+    gameEndSect.classList.remove("transition");
+    selectionSect.classList.remove("fadeOut");
+    playerScore = 0;
+    computerScore = 0;
+    roundNum = 1;
+    updateInfo();
+  });
 
-function getComputerSelection() {
-  let computerNumber = random(3);
-  let computerGuess = '';
+  circles.addEventListener("transitionend", () => {
+    circles.replaceChildren();
+  });
 
-  switch (computerNumber) {
-    case 1:
-      computerGuess = 'Rock';
-      break;
-    case 2:
-      computerGuess = 'Paper';
-      break;
-    case 3:
-      computerGuess = 'Scissors';
-      break;
-    default:
-      break;
-  }
-
-  return computerGuess;
+  rockDiv.addEventListener("click", () => {
+    selectionSect.classList.add("transition");
+    roundSect.classList.add("transition");
+    pSelectionImg.src = "images/rock.png";
+    game(rockDiv.getAttribute("id"));
+  });
+  paperDiv.addEventListener("click", () => {
+    selectionSect.classList.add("transition");
+    roundSect.classList.add("transition");
+    pSelectionImg.src = "images/paper.png";
+    game(paperDiv.getAttribute("id"));
+  });
+  scissorsDiv.addEventListener("click", () => {
+    selectionSect.classList.add("transition");
+    roundSect.classList.add("transition");
+    pSelectionImg.src = "images/scissors.png";
+    game(scissorsDiv.getAttribute("id"));
+  });
 }
 
-function playRound(playerSelection, computerSelection) {
-  let log = '';
-
-  if (playerSelection === 'Rock') {
-    if (computerSelection === 'Paper') {
-      log = 'You Lose! Paper beats Rock';
-    } else if (computerSelection === 'Scissors') {
-      log = 'You Win! Rock beats Scissors';
-    } else {
-      log = "It's a tie";
-    }
-  } else if (playerSelection === 'Paper') {
-    if (computerSelection === 'Scissors') {
-      log = 'You Lose! Scissors beats Paper';
-    } else if (computerSelection === 'Rock') {
-      log = 'You Win! Paper beats Rock';
-    } else {
-      log = "It's a tie";
-    }
-  } else if (playerSelection === 'Scissors') {
-    if (computerSelection === 'Rock') {
-      log = 'You Lose! Rock beats Scissors';
-    } else if (computerSelection === 'Paper') {
-      log = 'You Win! Scissors beats Paper';
-    } else {
-      log = "It's a tie";
-    }
-  }
-
-  return log;
-}
-
-function createParagWithText(text) {
-  const p = document.createElement('p');
-  p.textContent = text;
-
-  return p;
-}
-
-function game(playerSelect) {
-  let playerSelection = capitalize(playerSelect);
-  let computerSelection = getComputerSelection();
-
-  let roundResult = playRound(playerSelection, computerSelection);
-
-  if (roundResult.search('You Win!') > -1) {
-    playerScore++;
-  } else if (roundResult.search('You Lose!') > -1) {
-    computerScore++;
-  }
-
-  scorePlayer.textContent = playerScore;
-  scoreComputer.textContent = computerScore;
-  message.textContent = roundResult;
-  selectionPlayer.appendChild(createParagWithText(playerSelection));
-  selectionComputer.appendChild(createParagWithText(computerSelection));
-
-  if (playerScore >= 5 && computerScore < 5) {
-    message.textContent = 'Game Over. You Win!';
-  } else if (playerScore < 5 && computerScore >= 5) {
-    message.textContent = 'Game Over. You Lose!';
-  }
-}
-
-/* Helper Functions */
-function random(number) {
-  return Math.floor(Math.random() * number + 1);
-}
-
-function capitalize(string) {
-  return (
-    string.toLowerCase().charAt(0).toUpperCase() + string.toLowerCase().slice(1)
-  );
-}
+main();
