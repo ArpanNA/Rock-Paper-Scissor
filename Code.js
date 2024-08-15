@@ -54,6 +54,35 @@
 // playLogic();
 /**********************************************************************/
 /*MAIN GAME*/
+let playerScore = 0;
+let computerScore = 0;
+let roundNum = 1;
+
+const textDiv = document.querySelector("#game-intro .text");
+const circles = document.querySelector("#game-intro .circles");
+const wave = document.querySelector("#game-intro .wave");
+
+const pScore = document.querySelector("#game-info #p-points");
+const cScore = document.querySelector("#game-info #c-points");
+const playButton = document.querySelector("#game-intro .play.btn");
+const roundN = document.querySelector("#game-info .round");
+
+const rockDiv = document.querySelector("#selection #rock");
+const paperDiv = document.querySelector("#selection #paper");
+const scissorsDiv = document.querySelector("#selection #scissors");
+const gameSect = document.querySelector("#game");
+const selectionSect = document.querySelector("#game #selection");
+
+const roundSect = document.querySelector("#game #round");
+const pSelectionImg = document.createElement("img");
+const cSelectionImg = document.createElement("img");
+const pSelectionDiv = document.querySelector("#game #round .player-selection");
+const cSelectionDiv = document.querySelector("#game #round .cpu-selection");
+
+const endMsg = document.querySelector("#game #game-end .end-msg");
+const gameEndSect = document.querySelector("#game #game-end");
+const replayButton = document.querySelector("#game #game-end .replay.btn");
+
 function getComputerSelection() {
   let choices = ["rock", "paper", "scissors"];
   let computerChoice = Math.floor(Math.random() * 3);
@@ -66,53 +95,64 @@ function playRound(playerChoice, computerChoice) {
     roundWinner = "none";
   } else if (playerChoice === "paper" && computerChoice === "rock") {
     roundWinner = "player";
-  } else if (playerChoice === "rock" && computerChoice === "paper") {
-    roundWinner = "computer";
   } else if (playerChoice === "rock" && computerChoice === "scissors") {
     roundWinner = "player";
-  } else if (playerChoice === "scissors" && computerChoice === "rock") {
-    roundWinner = "computer";
   } else if (playerChoice === "scissors" && computerChoice === "paper") {
     roundWinner = "player";
-  } else if (playerChoice === "paper" && computerChoice === "scissors") {
+  } else if (computerChoice === "paper" && playerChoice === "rock") {
     roundWinner = "computer";
+  } else if (computerChoice === "rock" && playerChoice === "scissors") {
+    return (roundWinner = "computer");
+  } else if (computerChoice === "scissors" && playerChoice === "paper") {
+    return (roundWinner = "computer");
   }
   return roundWinner;
 }
-
 function updateInfo() {
   roundN.innerText = `Round ${roundNum}`;
   pScore.innerText = playerScore;
   cScore.innerText = computerScore;
 }
-
+// Main game logic function
 function game(playerChoice) {
+  // Get computer's choice
   let computerChoice = getComputerSelection();
+
+  // Set the image sources based on the choices
   cSelectionImg.src = `images/${computerChoice}.png`;
+  // Append the images to their respective divs
   pSelectionDiv.appendChild(pSelectionImg);
   cSelectionDiv.appendChild(cSelectionImg);
 
+  // Determine the round winner
   let roundWinner = playRound(playerChoice, computerChoice);
+
+  // Update scores and display the result
   switch (roundWinner) {
     case "player":
-      console.log("You Win! " + playerChoice + " Beats " + computerChoice);
+      console.log("You win! " + playerChoice + " beats " + computerChoice);
       playerScore++;
       cSelectionDiv.classList.add("lose");
       break;
+
     case "computer":
-      console.log("You Lose! " + computerChoice + " Beats " + playerChoice);
+      console.log("You lose! " + computerChoice + " beats " + playerChoice);
       computerScore++;
       pSelectionDiv.classList.add("lose");
       break;
+
     case "none":
-      console.log("It's a Tie!");
+      console.log("It's a tie");
       pSelectionDiv.classList.add("lose");
       cSelectionDiv.classList.add("lose");
       break;
   }
+
+  // Update round number and UI information
   roundNum++;
   updateInfo();
   roundSect.addEventListener("transitionend", removeTransitionClass);
+  // Check if the game should end
   if (playerScore === 5 || computerScore === 5) {
     gameEnd();
   }
@@ -129,7 +169,7 @@ function removeTransitionClass(e) {
 function gameEnd() {
   let messages = [
     "You Won, congratulations!",
-    "You lost, better luck next time!",
+    "You Lost, better luck next time!",
   ];
   selectionSect.classList.add("fadeOut");
   if (playerScore > computerScore) {
@@ -139,35 +179,6 @@ function gameEnd() {
   }
   gameEndSect.classList.add("transition");
 }
-
-let playerScore = 0;
-let computerScore = 0;
-let roundNum = 1;
-//intro
-const textDiv = document.querySelector("#game-intro .text");
-const circles = document.querySelector("#game-intro .circles");
-const wave = document.querySelector("#game-intro .wave");
-//game info
-const pScore = document.querySelector("#game-info #p-points");
-const cScore = document.querySelector("#game-info #c-points");
-const playButton = document.querySelector("#game-intro .play.btn");
-const roundN = document.querySelector("#game-info .round");
-//selection
-const rockDiv = document.querySelector("#selection #rock");
-const paperDiv = document.querySelector("#selection #paper");
-const scissorsDiv = document.querySelector("#selection #scissors");
-const gameSect = document.querySelector("#game");
-const selectionSect = document.querySelector("#game #selection");
-//round
-const roundSect = document.querySelector("#game #round");
-const pSelectionImg = document.createElement("img");
-const cSelectionImg = document.createElement("img");
-const pSelectionDiv = document.querySelector("#game #round .player-selection");
-const cSelectionDiv = document.querySelector("#game #round .cpu-selection");
-//game end
-const endMsg = document.querySelector("#game #game-end .end-msg");
-const gameEndSect = document.querySelector("#game #game-end");
-const replayButton = document.querySelector("#game #game-end .replay.btn");
 
 function main() {
   playButton.addEventListener("click", () => {
